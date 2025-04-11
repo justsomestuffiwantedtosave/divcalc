@@ -26,32 +26,39 @@
     .input-icon i {
       margin-right: 0.5rem;
     }
+    .blue-icon {
+      color: cornflowerblue;
+    }
+    .green-icon {
+      color: green;
+    }
   </style>
 </head>
+  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
 <body>
   <div class="container py-5">
     <h1 class="mb-4 text-center">NJ Alimony & Child Support Estimator</h1>
 
     <div class="mb-4">
-      <label class="form-label slider-label"><i class="bi bi-currency-dollar"></i> Spouse 1 Annual Income: $<span id="spouse1IncomeLabel">100000</span></label>
+      <label class="form-label slider-label"><i class="bi bi-currency-dollar green-icon"></i> Spouse 1 Annual Income: $<span id="spouse1IncomeLabel">100000</span></label>
       <div class="input-icon">
-        <i class="bi bi-currency-dollar"></i>
-        <input type="number" class="form-control mb-1" id="spouse1IncomeInput" value="100000" min="0" max="500000">
+        <i class="bi bi-currency-dollar green-icon"></i>
+        <input type="text" class="form-control mb-1" id="spouse1IncomeInput" value="$100,000">
       </div>
       <input type="range" class="form-range" min="0" max="500000" step="1000" id="spouse1Income" value="100000">
     </div>
 
     <div class="mb-4">
-      <label class="form-label slider-label"><i class="bi bi-currency-dollar"></i> Spouse 2 Annual Income: $<span id="spouse2IncomeLabel">50000</span></label>
+      <label class="form-label slider-label"><i class="bi bi-currency-dollar green-icon"></i> Spouse 2 Annual Income: $<span id="spouse2IncomeLabel">50000</span></label>
       <div class="input-icon">
-        <i class="bi bi-currency-dollar"></i>
-        <input type="number" class="form-control mb-1" id="spouse2IncomeInput" value="50000" min="0" max="500000">
+        <i class="bi bi-currency-dollar green-icon"></i>
+        <input type="text" class="form-control mb-1" id="spouse2IncomeInput" value="$50,000">
       </div>
       <input type="range" class="form-range" min="0" max="500000" step="1000" id="spouse2Income" value="50000">
     </div>
 
     <div class="mb-4">
-      <label class="form-label slider-label"><i class="bi bi-people"></i> Number of Children</label>
+      <label class="form-label slider-label"><i class="bi bi-people blue-icon"></i> Number of Children</label>
       <select class="form-select" id="numChildren">
         <option value="0">0</option>
         <option value="1">1</option>
@@ -68,39 +75,52 @@
     </div>
 
     <div class="mb-4">
-      <label class="form-label slider-label"><i class="bi bi-calendar-range"></i> Length of Marriage (years)</label>
+      <label class="form-label slider-label"><i class="bi bi-calendar-range blue-icon"></i> Length of Marriage (years)</label>
       <input type="number" class="form-control" id="marriageLength" value="10" min="0">
     </div>
 
     <div class="mb-4">
-      <label class="form-label slider-label"><i class="bi bi-clock-history"></i> Length of Separation (years)</label>
+      <label class="form-label slider-label"><i class="bi bi-clock-history blue-icon"></i> Length of Separation (years)</label>
       <input type="number" class="form-control" id="separationLength" value="1" min="0">
     </div>
 
     <div class="mb-4">
-      <label class="form-label slider-label"><i class="bi bi-hourglass-split"></i> Parenting Time with Spouse 1: <span id="parentingTimeLabel">50</span>% (<span id="overnightsSpouse1">182.5</span> overnights)</label>
+      <label class="form-label slider-label"><i class="bi bi-hourglass-split blue-icon"></i> Parenting Time with Spouse 1: <span id="parentingTimeLabel">50</span>% (<span id="overnightsSpouse1">182.5</span> overnights)</label>
       <input type="range" class="form-range" min="0" max="100" step="1" id="parentingTime" value="50">
       <div class="form-text">Parenting Time with Spouse 2: <span id="spouse2TimeLabel">50</span>% (<span id="overnightsSpouse2">182.5</span> overnights)</div>
     </div>
 
     <div class="card">
       <div class="card-body">
+        <h5 class="text-center mb-3">Alimony Summary</h5>
         <p class="result-box text-center">Estimated Alimony: <span id="alimonyLabel">None</span></p>
-        <p class="result-box text-center">Alimony Per Month: $<span id="alimonyMonthly">0</span></p>
-        <p class="result-box text-center">Estimated Child Support (Paid by Lower Earner if Less Parenting Time): $<span id="childSupportAmount">0</span>/year ($<span id="childSupportMonthly">0</span>/mo)</p>
-        <p class="result-box text-center">Estimated Alimony Duration: <span id="alimonyDuration">0</span> years — Total: $<span id="alimonyTotal">0</span></p>
+        <p class="text-center">Monthly: $<span id="alimonyMonthly">0</span> | Yearly: $<span id="alimonyYearly">0</span> | Duration: <span id="alimonyDuration">0</span> years | Total: $<span id="alimonyTotal">0</span></p>
+
+        <h5 class="text-center mt-4 mb-3">Child Support Summary</h5>
+        <p class="text-center">Monthly: $<span id="childSupportMonthly">0</span> | Yearly: $<span id="childSupportYearly">0</span></p>
+        <ul class="list-group list-group-flush text-center" id="childSupportBreakdown"></ul>
+        <p class="text-center mt-2">Combined Total Child Support: $<span id="childSupportTotal">0</span></p>
 
         <hr>
-        <p class="result-box text-center highlight">Spouse 1 Pays: $<span id="spouse1Pays">0</span> | Receives: $<span id="spouse1Receives">0</span> | Net: $<span id="spouse1Net">0</span></p>
-        <p class="result-box text-center highlight">Spouse 2 Pays: $<span id="spouse2Pays">0</span> | Receives: $<span id="spouse2Receives">0</span> | Net: $<span id="spouse2Net">0</span></p>
+        <h5 class="text-center mb-3">Spouse Financial Summary</h5>
+        <p class="text-center highlight">Spouse 1 Pays: $<span id="spouse1Pays">0</span> | Receives: $<span id="spouse1Receives">0</span> | Net: $<span id="spouse1Net">0</span></p>
+        <p class="text-center highlight">Spouse 2 Pays: $<span id="spouse2Pays">0</span> | Receives: $<span id="spouse2Receives">0</span> | Net: $<span id="spouse2Net">0</span></p>
 
-        <p class="text-muted text-center">* Based on simplified NJ model and norms, not legal advice.</p>
+        <p class="text-muted text-center mt-4">* Based on simplified NJ model and norms, not legal advice.</p>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    function formatCurrency(value) {
+      return `$${parseInt(value).toLocaleString()}`;
+    }
+
+    function parseCurrency(input) {
+      return parseInt(input.replace(/[$,]/g, '')) || 0;
+    }
+
     const spouse1Slider = document.getElementById('spouse1Income');
     const spouse1Input = document.getElementById('spouse1IncomeInput');
     const spouse2Slider = document.getElementById('spouse2Income');
@@ -113,14 +133,18 @@
     const numChildren = document.getElementById('numChildren');
     const childAgesDiv = document.getElementById('childAges');
     const marriageLength = document.getElementById('marriageLength');
-    const separationLength = document.getElementById('separationLength');
 
     const alimonyLabel = document.getElementById('alimonyLabel');
     const alimonyMonthly = document.getElementById('alimonyMonthly');
-    const alimonyTotal = document.getElementById('alimonyTotal');
+    const alimonyYearly = document.getElementById('alimonyYearly');
     const alimonyDuration = document.getElementById('alimonyDuration');
-    const childSupportAmount = document.getElementById('childSupportAmount');
+    const alimonyTotal = document.getElementById('alimonyTotal');
+
     const childSupportMonthly = document.getElementById('childSupportMonthly');
+    const childSupportYearly = document.getElementById('childSupportYearly');
+    const childSupportTotal = document.getElementById('childSupportTotal');
+    const childSupportBreakdown = document.getElementById('childSupportBreakdown');
+
     const spouse1Pays = document.getElementById('spouse1Pays');
     const spouse1Receives = document.getElementById('spouse1Receives');
     const spouse1Net = document.getElementById('spouse1Net');
@@ -128,89 +152,148 @@
     const spouse2Receives = document.getElementById('spouse2Receives');
     const spouse2Net = document.getElementById('spouse2Net');
 
-    function syncSliders() {
+    function syncInputs() {
       spouse1Input.addEventListener('input', () => {
-        spouse1Slider.value = spouse1Input.value;
+        spouse1Slider.value = parseCurrency(spouse1Input.value);
+        updateLabels();
         calculateSupport();
+
+    new Cleave('#spouse1IncomeInput', {
+      numeral: true,
+      numeralThousandsGroupStyle: 'thousand',
+      prefix: '$',
+      rawValueTrimPrefix: true
+    });
+
+    new Cleave('#spouse2IncomeInput', {
+      numeral: true,
+      numeralThousandsGroupStyle: 'thousand',
+      prefix: '$',
+      rawValueTrimPrefix: true
+    });
       });
       spouse1Slider.addEventListener('input', () => {
-        spouse1Input.value = spouse1Slider.value;
+        spouse1Input.value = formatCurrency(spouse1Slider.value);
+        updateLabels();
         calculateSupport();
       });
       spouse2Input.addEventListener('input', () => {
-        spouse2Slider.value = spouse2Input.value;
+        spouse2Slider.value = parseCurrency(spouse2Input.value);
+        updateLabels();
         calculateSupport();
       });
       spouse2Slider.addEventListener('input', () => {
-        spouse2Input.value = spouse2Slider.value;
+        spouse2Input.value = formatCurrency(spouse2Slider.value);
+        updateLabels();
         calculateSupport();
       });
+
       parentingTime.addEventListener('input', calculateSupport);
-      numChildren.addEventListener('change', calculateSupport);
+      numChildren.addEventListener('change', () => {
+        renderChildAges();
+        calculateSupport();
+      });
       marriageLength.addEventListener('input', calculateSupport);
-      separationLength.addEventListener('input', calculateSupport);
       childAgesDiv.addEventListener('input', calculateSupport);
+    }
+
+    function updateLabels() {
+      document.getElementById('spouse1IncomeLabel').textContent = spouse1Slider.value;
+      document.getElementById('spouse2IncomeLabel').textContent = spouse2Slider.value;
+    }
+
+    function renderChildAges() {
+      childAgesDiv.innerHTML = '';
+      const count = parseInt(numChildren.value);
+      for (let i = 0; i < count; i++) {
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'form-control my-1';
+        input.id = `childAge${i}`;
+        input.placeholder = `Age of Child ${i + 1}`;
+        input.min = 0;
+        input.max = 20;
+        input.value = 5 + i;
+        childAgesDiv.appendChild(input);
+      }
     }
 
     function calculateSupport() {
       const income1 = parseInt(spouse1Slider.value);
       const income2 = parseInt(spouse2Slider.value);
-      const time1 = parseInt(parentingTime.value);
-      const time2 = 100 - time1;
-      const overnights1 = (time1 / 100) * 365;
-      const overnights2 = 365 - overnights1;
-      const yearsMarried = parseInt(marriageLength.value);
-
-      parentingTimeLabel.textContent = time1;
-      spouse2TimeLabel.textContent = `${time2}`;
-      overnightsSpouse1.textContent = overnights1.toFixed(1);
-      overnightsSpouse2.textContent = overnights2.toFixed(1);
-
       const totalIncome = income1 + income2;
       const higherIncome = Math.max(income1, income2);
       const lowerIncome = Math.min(income1, income2);
 
-      let alimony = higherIncome > lowerIncome ? (higherIncome - lowerIncome) * 0.25 : 0;
-      let alimonyMonthlyVal = alimony / 12;
-      let alimonyYears = yearsMarried < 20 ? Math.floor(yearsMarried / 2) : 20;
-      let alimonyTotalVal = alimony * alimonyYears;
+      const time1 = parseInt(parentingTime.value);
+      const time2 = 100 - time1;
+      const nights1 = (time1 / 100) * 365;
+      const nights2 = 365 - nights1;
 
-      const children = parseInt(numChildren.value);
-      let childSupport = 0;
+      parentingTimeLabel.textContent = time1;
+      spouse2TimeLabel.textContent = time2;
+      overnightsSpouse1.textContent = nights1.toFixed(1);
+      overnightsSpouse2.textContent = nights2.toFixed(1);
+
       const lowerIncomeIsSpouse1 = income1 < income2;
       const lowerParentTime = lowerIncomeIsSpouse1 ? time1 : time2;
-      if (children > 0 && lowerParentTime < 50) {
-        const lowerIncomeShare = lowerIncome / totalIncome;
-        const baseChildCost = 17000 * children;
-        childSupport = baseChildCost * lowerIncomeShare * ((50 - lowerParentTime) / 50);
-      }
 
-      const childSupportMonthlyVal = childSupport / 12;
-      const spouse1PaysVal = (income1 > income2 ? alimony : 0) + (lowerIncomeIsSpouse1 && time1 < 50 ? childSupport : 0);
-      const spouse2PaysVal = (income2 > income1 ? alimony : 0) + (!lowerIncomeIsSpouse1 && time2 < 50 ? childSupport : 0);
-      const spouse1ReceivesVal = income1 < income2 ? alimony : 0;
-      const spouse2ReceivesVal = income2 < income1 ? alimony : 0;
-      const spouse1NetVal = spouse1ReceivesVal - spouse1PaysVal;
-      const spouse2NetVal = spouse2ReceivesVal - spouse2PaysVal;
+      const yearsMarried = parseInt(marriageLength.value);
+      const alimonyYears = yearsMarried < 20 ? Math.floor(yearsMarried / 2) : 20;
+      const alimonyYear = higherIncome > lowerIncome ? (higherIncome - lowerIncome) * 0.25 : 0;
+      const alimonyMonth = alimonyYear / 12;
+      const alimonyTotalVal = alimonyYear * alimonyYears;
 
-      alimonyLabel.textContent = higherIncome === income1 ? 'Spouse 1 pays Spouse 2' : (higherIncome === income2 ? 'Spouse 2 pays Spouse 1' : 'None');
-      alimonyMonthly.textContent = Math.round(alimonyMonthlyVal).toLocaleString();
+      alimonyLabel.textContent = income1 > income2 ? 'Spouse 1 pays Spouse 2' : income2 > income1 ? 'Spouse 2 pays Spouse 1' : 'None';
+      alimonyMonthly.textContent = Math.round(alimonyMonth).toLocaleString();
+      alimonyYearly.textContent = Math.round(alimonyYear).toLocaleString();
       alimonyDuration.textContent = alimonyYears;
       alimonyTotal.textContent = Math.round(alimonyTotalVal).toLocaleString();
 
-      childSupportAmount.textContent = Math.round(childSupport).toLocaleString();
-      childSupportMonthly.textContent = Math.round(childSupportMonthlyVal).toLocaleString();
+      let childSupport = 0;
+      const children = parseInt(numChildren.value);
+      if (children > 0 && lowerParentTime < 50) {
+        const baseChildCost = 17000 * children;
+        const lowerIncomeShare = lowerIncome / totalIncome;
+        childSupport = baseChildCost * lowerIncomeShare * ((50 - lowerParentTime) / 50);
+      }
 
-      spouse1Pays.textContent = Math.round(spouse1PaysVal).toLocaleString();
-      spouse2Pays.textContent = Math.round(spouse2PaysVal).toLocaleString();
-      spouse1Receives.textContent = Math.round(spouse1ReceivesVal).toLocaleString();
-      spouse2Receives.textContent = Math.round(spouse2ReceivesVal).toLocaleString();
-      spouse1Net.textContent = Math.round(spouse1NetVal).toLocaleString();
-      spouse2Net.textContent = Math.round(spouse2NetVal).toLocaleString();
+      const childSupportMonth = childSupport / 12;
+      childSupportMonthly.textContent = Math.round(childSupportMonth).toLocaleString();
+      childSupportYearly.textContent = Math.round(childSupport).toLocaleString();
+
+      let combinedTotal = 0;
+      childSupportBreakdown.innerHTML = '';
+      for (let i = 0; i < children; i++) {
+        const age = parseInt(document.getElementById(`childAge${i}`)?.value || '0');
+        const yearsLeft = Math.max(0, 20 - age);
+        const supportPerChild = (childSupport / children) * yearsLeft;
+        combinedTotal += supportPerChild;
+
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.textContent = `Child ${i + 1}: $${Math.round(supportPerChild).toLocaleString()} over ${yearsLeft} year(s)`;
+        childSupportBreakdown.appendChild(li);
+      }
+      childSupportTotal.textContent = Math.round(combinedTotal).toLocaleString();
+
+      const spouse1Pays = (income1 > income2 ? alimonyYear : 0) + (lowerIncomeIsSpouse1 && time1 < 50 ? childSupport : 0);
+      const spouse2Pays = (income2 > income1 ? alimonyYear : 0) + (!lowerIncomeIsSpouse1 && time2 < 50 ? childSupport : 0);
+      const spouse1Receives = income1 < income2 ? alimonyYear : 0;
+      const spouse2Receives = income2 < income1 ? alimonyYear : 0;
+
+      spouse1Pays.textContent = Math.round(spouse1Pays).toLocaleString();
+      spouse2Pays.textContent = Math.round(spouse2Pays).toLocaleString();
+      spouse1Receives.textContent = Math.round(spouse1Receives).toLocaleString();
+      spouse2Receives.textContent = Math.round(spouse2Receives).toLocaleString();
+      spouse1Net.textContent = Math.round(spouse1Receives - spouse1Pays).toLocaleString();
+      spouse2Net.textContent = Math.round(spouse2Receives - spouse2Pays).toLocaleString();
     }
 
-    syncSliders();
+    syncInputs();
+    renderChildAges();
+    updateLabels();
     calculateSupport();
-  </script>
+</script>
 </body>
 </html>
